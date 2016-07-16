@@ -1,0 +1,60 @@
+Mac Book 2.2 GHz Intel Core i7
+/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/bin/java -Xmx8g -Xms512m -server
+sampled merged iterator after 1000000 in 152 millis:
+2000002
+2000004
+2000007
+2000008
+2000011
+2000013
+2000014
+2000016
+2000019
+2000021
+approximate sparsities in 1259 millis by 1000000 elems with 8 cores:
+(2,Success(0.5000005000005))
+(3,Success(0.3333334444444815))
+(4,Success(0.2500264402960613))
+(5,Success(0.20185549609116923))
+(6,Success(0.17515803633828622))
+(7,Success(0.12411638443014568))
+(8,Success(0.08479318941102651))
+sampled merged iterator after 10000000 in 1074 millis:
+20000003
+20000005
+20000006
+20000009
+20000010
+20000012
+20000015
+20000017
+20000018
+20000020
+approximate sparsities in 205839 millis by 10000000 elems with 8 cores:
+(0,Failure(java.lang.ArithmeticException: / by zero))
+(1,Failure(java.lang.IllegalArgumentException: requirement failed: sparsity of 1 is not supported))
+(2,Success(0.500000050000005))
+(3,Success(0.33333343333336335))
+(4,Success(0.2500922215066806))
+(5,Success(0.19803803716579843))
+(6,Success(0.17317002660965264))
+(7,Success(0.1549180053079866))
+(8,Success(0.10326717621514048))
+(9,Success(0.06998620963730823))
+(10,Success(0.0714362156139008))
+(11,Success(0.11628740595183364))
+(12,Success(0.1446795303551978))
+(13,Success(0.15757439804295117))
+(14,Success(0.14204988755117826))
+(15,Success(0.1150120846072599))
+(16,Success(0.08757484660893423))
+(17,Success(0.060963775720731285))
+(18,Success(0.04185682308596335))
+(19,Success(0.02613035567965988))
+(20,Success(0.018629406125606564))
+(21,Success(0.010291265590790112))
+(22,Success(0.006213326496636216))
+(23,Success(0.0034467755294112874))
+(24,Success(0.002332971058933401))
+
+Process finished with exit code 0

@@ -59,9 +59,16 @@ class ScalaTestAssignmentTEST extends FunSuite {
 
   test("testApproximatesFor") {
     val actual: Seq[(Int, Try[Double])] = approximatesFor(2, 4, 1000)
-    assert(actual == Seq(2 -> Try(0.5), 3 -> Try(0.330, 4 -> Try(0.25))))
+    def compareWithDelta(delta: Double)(actual: Try[Double], expected: Try[Double]) = (actual.get - expected.get) <= delta
+    val expected: Seq[(Int, Try[Double])] = Seq(2 -> Try(0.5), 3 -> Try(0.33), 4 -> Try(0.25))
+    assert (
+      (actual zip expected).exists(tuple => tuple._1._1 != tuple._2._1 || !compareWithDelta(0.001)(tuple._1._2, tuple._2._2))
+    )
   }
 
+  test("testApproximatesForIllegalException") {
+    assert(approximatesFor(0, 4, 1000).count(_._2.isFailure) == 2)
+  }
   //
   //  @throws(classOf[ExecutionException])
   //  @throws(classOf[InterruptedException])
