@@ -78,6 +78,7 @@ public class JavaTestAssignmentTEST {
         final Iterator<BigInteger> expected = prepareIterator(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L);
         assertEquals(mergeIterators(input), expected);
     }
+
     @Test
     public void testMergeIteratorsInfinite() {
         final Iterator<BigInteger> mergeIterators
@@ -109,7 +110,7 @@ public class JavaTestAssignmentTEST {
         final ConcurrentSkipListMap<Integer, Future<Double>> actual =
             (ConcurrentSkipListMap<Integer, Future<Double>>) approximatesFor(1, 4, 1000);
         // Don't see any reason to check value of Futures, because approximateSparsity
-        // provided as already imlemented
+        // provided as already implemented
         actual.get(1).get();
     }
 
@@ -119,7 +120,7 @@ public class JavaTestAssignmentTEST {
         final ConcurrentSkipListMap<Integer, Future<Double>> actual =
             (ConcurrentSkipListMap<Integer, Future<Double>>) approximatesFor(0, 4, 1000);
         // Don't see any reason to check value of Futures, because approximateSparsity
-        // provided as already imlemented
+        // provided as already implemented
         actual.get(0).get();
     }
 

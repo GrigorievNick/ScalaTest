@@ -1,16 +1,24 @@
 package captify.test.java;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
+import java.util.function.BinaryOperator;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static captify.test.java.SparseIterators.*;
+import static captify.test.java.SparseIterators.iteratorSparse;
+import static java.util.concurrent.CompletableFuture.completedFuture;
+import static java.util.stream.Collectors.toConcurrentMap;
+import static java.util.stream.StreamSupport.stream;
 
 public class TestAssignment {
   /**
@@ -25,7 +33,8 @@ public class TestAssignment {
    * @return sampleAfter(iteratorFromOne, 1, 2) should be same as to Seq[BigInt](2,3,4).toIterator
    */
   public static Iterator<BigInteger> sampleAfter(Iterator<BigInteger> iterator, int after, int sampleSize) {
-    throw new java.lang.UnsupportedOperationException("please implement this method");
+    return stream(Spliterators.spliterator(iterator, after + sampleSize, Spliterator.NONNULL), false)
+        .skip(after).limit(sampleSize).iterator();
   }
 
   /**
@@ -39,7 +48,9 @@ public class TestAssignment {
    * @return value at given position
    */
   public static BigInteger valueAt(Iterator<BigInteger> iterator, int position) {
-    throw new java.lang.UnsupportedOperationException("please implement this method");
+    return stream(Spliterators.spliterator(iterator, position, 0), false)
+        .skip(position).findFirst()
+        .orElseThrow(() -> new IndexOutOfBoundsException("Iterator size less then position " + position));
   }
 
   /**
@@ -55,7 +66,9 @@ public class TestAssignment {
    * @return Iterator with all elements and ascending sorting retained
    */
   public static Iterator<BigInteger> mergeIterators(List<Iterator<BigInteger>> iterators) {
-    throw new java.lang.UnsupportedOperationException("please implement this method");
+    return iterators.stream()
+        .map(it -> stream(Spliterators.spliteratorUnknownSize(it, 0), false))
+        .reduce(Stream::concat).get().iterator();
   }
 
   /**
@@ -92,7 +105,45 @@ public class TestAssignment {
    * @return Map from Sparsity to Future[Approximation]
    */
   public static Map<Integer, Future<Double>> approximatesFor(int sparsityMin, int sparsityMax, int extent) {
-    throw new java.lang.UnsupportedOperationException("please implement this method");
+    //Very bad idea create Pool every time, but it's a tes so i live it here
+    final ForkJoinPool forkJoinPool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
+    try {
+      return forkJoinPool.submit(() ->
+          IntStream.rangeClosed(sparsityMin, sparsityMax).parallel()
+              .mapToObj(sparsity -> evaluate(extent, sparsity))
+              .collect(toConcurrentMap(t -> t.key, t -> t.value, throwingMerger(), ConcurrentSkipListMap::new))
+      ).get();
+    } catch (InterruptedException | ExecutionException e) {
+      throw new RuntimeException(e);
+    } finally {
+      forkJoinPool.shutdown();
+    }
   }
 
+  // I'd better use Try pattern, but in task you expect result in future.
+  private static Tuple evaluate(int extent, int sparsity) {
+    try {
+      return new Tuple(sparsity, completedFuture(approximateSparsity(sparsity, extent)));
+    } catch (Exception e) {
+      final CompletableFuture<Double> dummyFutureAsExceptionContainer = completedFuture(0d);
+      dummyFutureAsExceptionContainer.obtrudeException(e);
+      return new Tuple(sparsity, dummyFutureAsExceptionContainer);
+    }
+  }
+
+  private static <T> BinaryOperator<T> throwingMerger() {
+    return (u, v) -> {
+      throw new IllegalStateException(String.format("Duplicate key %s", u));
+    };
+  }
+
+  private static class Tuple {
+    private final Integer key;
+    private final Future<Double> value;
+
+    public Tuple(Integer key, Future<Double> value) {
+      this.key = key;
+      this.value = value;
+    }
+  }
 }
