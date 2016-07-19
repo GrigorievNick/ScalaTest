@@ -1,5 +1,6 @@
 package captify.test.java;
 
+import com.sun.xml.internal.xsom.impl.scd.Iterators;
 import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.List;
@@ -66,9 +67,7 @@ public class TestAssignment {
    * @return Iterator with all elements and ascending sorting retained
    */
   public static Iterator<BigInteger> mergeIterators(List<Iterator<BigInteger>> iterators) {
-    return iterators.stream()
-        .map(it -> stream(Spliterators.spliteratorUnknownSize(it, 0), false))
-        .reduce(Stream::concat).get().iterator();
+    return com.google.common.collect.Iterators.mergeSorted(iterators, BigInteger::compareTo);
   }
 
   /**

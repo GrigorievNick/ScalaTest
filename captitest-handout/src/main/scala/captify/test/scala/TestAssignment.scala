@@ -50,7 +50,21 @@ object TestAssignment {
     * @param iterators to be merged
     * @return Iterator with all elements and ascending sorting retained
     */
-  def mergeIterators(iterators: Seq[Iterator[BigInt]]): Iterator[BigInt] = iterators.reduce(_ ++ _)
+  def mergeIterators(iterators: Seq[Iterator[BigInt]]): Iterator[BigInt] = combine(iterators)
+
+  def combine[T](rawIterators: Seq[Iterator[T]])(implicit cmp: Ordering[T]): Iterator[T] = {
+    new Iterator[T] {
+      private val iterators: Seq[BufferedIterator[T]] = rawIterators.map(_.buffered)
+
+      def hasNext: Boolean = iterators.exists(_.hasNext)
+
+      def next(): T = if (hasNext) {
+        iterators.filter(_.hasNext).map(x => (x.head, x)).minBy(_._1)(cmp)._2.next()
+      } else {
+        throw new UnsupportedOperationException("Cannot call next on an exhausted iterator!")
+      }
+    }
+  }
 
   /**
     * How much elements, on average, are included in sparse stream from the general sequence

@@ -52,8 +52,7 @@ class ScalaTestAssignmentTEST extends FunSuite {
 
   test("testMergeIteratorsSorted") {
     assert(sampleAfter(mergeIterators(List(iteratorFromOne, iteratorFromOne, iteratorFromOne)), 5, 10) sameElements
-      Iterator(6, 7, 8, 9, 10, 11, 12, 13, 14, 15))
-
+      Iterator(2, 3, 3, 3, 4, 4, 4, 5, 5, 5))
   }
 
 
